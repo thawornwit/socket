@@ -27,7 +27,7 @@ def main(argv):
 
     #parsing arguments/options for hostname, port#
     try:
-        opts, args = getopt.getopt(argv,"h:p:") #
+        opts, args = getopt.getopt(argv,"h:p:") #valid options
         if len(sys.argv) not in (2,4,6,):   #must have 2, 4, or 6 option/argument tokens
             print 'error: invalid arguments'
             printUsage()
