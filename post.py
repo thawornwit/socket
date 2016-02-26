@@ -1,7 +1,7 @@
 from socket import *
 import sys, getopt, os
 
-verbose = True  #for debugging
+verbose = False  #for debugging
 
 def vprint(arg):
     #verbose print msg for debugging purposes
@@ -72,12 +72,15 @@ def main(argv):
         if reply2 == 'ok':
             vprint( 'id is ok! continuing with msg...') #debug
 
+            print 'Please enter your message: (quit to exit)'
+
             msg = ""
             sentinel = 'quit'   #type quit and press enter to exit message
             for line in iter(raw_input, sentinel):
                 msg += line + "\n"
             clientSocket.send(msg)
             clientSocket.close()
+            print "message sent successfully."
             sys.exit(0)
 
         elif reply2.startswith('error'):

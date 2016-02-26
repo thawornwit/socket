@@ -1,7 +1,7 @@
 from socket import *
 import sys, getopt, os
 
-verbose = True  #for debugging
+verbose = False  #for debugging
 
 def vprint(arg):
     #verbose print msg for debugging purposes
@@ -13,7 +13,7 @@ def printUsage():
     print 'usage: python get.py [-h hostname(optional)] [-p port#(optional)] [groupname(REQUIRED)]'
 
 def main(argv):
-    serverName = '192.168.1.6'    #default hostname
+    serverName = 'localhost'    #default hostname
     serverPort = 12000          #default port number
 
     #parsing arguments/options for hostname, port#
@@ -44,10 +44,9 @@ def main(argv):
     #********************************************#
     vprint( 'host: '+serverName+": "+str(serverPort) )
     vprint( "group name: "+groupName )
-    vprint( "user id: "+userId )
     #********************************************#
 
-    group = "post "+groupName    #post msg with group name
+    group = "get "+groupName    #post msg with group name
     clientSocket.send(group)
 
     reply = clientSocket.recv(1024)
@@ -55,15 +54,19 @@ def main(argv):
 
     if reply == 'ok':
         vprint("group is ok! getting message count")
-        msgCount = clientSocket.recv(1024)) #receive message count
+        msgCount = clientSocket.recv(1024) #receive message count
         count = int(msgCount[10:])
 
-        for n in range(1, count):
+        for x in xrange(0, count):
+            print("\n" + str(count) + " messages\n")
+            clientSocket.send("header")
             header = clientSocket.recv(1024)
             print header
+            clientSocket.send("body")
             body = clientSocket.recv(1024)
             print body
 
+        vprint("end of messages")
         clientSocket.close()
         sys.exit(0)
 

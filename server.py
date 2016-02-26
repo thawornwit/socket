@@ -1,7 +1,7 @@
 from socket import *
 import sys, getopt, thread, time
 
-verbose = True
+verbose = False
 
 #messages = { 'groupName' : [('address', 'username', 'timestamp', 'message')]}
 messages = dict()
@@ -45,7 +45,8 @@ def clientHandler(connSocket, clientAddr):
 					connSocket.send(reply2)
 					msg = connSocket.recv(1024)	#receives message
 					timestamp = time.strftime("%a %c %Y")
-					print "the message: \n", msg
+					#vprint("received message: \n" + msg)	#debug
+					print("received message: \n" + msg)
 					if groupName not in messages:
 						messages[groupName] = [( (clientAddr, userName, timestamp, msg) )]
 					else:
@@ -76,7 +77,7 @@ def clientHandler(connSocket, clientAddr):
 	#*******************************************************#
 	#this is the GET handler
 	elif cmd.startswith('get '):
-		vprint( 'this is a post command!')	#debug
+		vprint( 'this is a get command!')	#debug
 		groupName = cmd[4:]
 		vprint( 'received groupname: '+groupName)	#debug
 		if isValidString(groupName):	#if group name is a valid printable string
@@ -85,15 +86,25 @@ def clientHandler(connSocket, clientAddr):
 				reply = 'ok'
 				connSocket.send(reply)
 				count = len(messages[groupName])
-				msgCount = "messages: " + count
+				msgCount = "messages: " + str(count)
 				vprint("sending: " + msgCount)
 				connSocket.send(msgCount)
-				for n in range(0, count-1):
-					header = "From: " + messages[groupName][n][1] + " " + messages[groupName][n][0][0] + ":" + messages[groupName][n][0][1] + " " messages[groupName][n][2]
-					vprint( "header: \n" + header )
-					connSocket.send(header)
-					msg = messages[groupName][n][3]
-					connSocket.send(msg)
+				for row in messages[groupName]:
+					while 1:	#accepts header
+						reply = connSocket.recv(64)
+					 	if reply == 'header':
+							header = "from " + str(row[1]) + " /" + str(row[0][0]) + ":" + str(row[0][1]) + " " + str(row[2]) + "\n"
+							vprint( "header: \n" + header )
+							connSocket.send(header)
+							break;
+					while 1:	#accepts body
+						reply = connSocket.recv(64)
+						if reply == "body":
+							msg = "" + str(row[3]) + "\n"
+							vprint(" message: \n" + msg )
+							connSocket.send(msg)
+							break;
+				vprint("end of messages.")
 				connSocket.close()
 				sys.exit(0)
 
