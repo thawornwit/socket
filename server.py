@@ -3,7 +3,7 @@ import sys, getopt, thread
 
 verbose = True
 
-groups = [dict()]
+messages = { 'groupName' : [('address', 'port', 'username', 'timestamp', 'message')]}
 
 def vprint(arg):
 	if verbose:
@@ -19,7 +19,8 @@ def isValidString(msg):
 	allowed = string.printable
 	return not msg.translate(trans, allowed)
 
-def clientHandler(connSocket, addr):
+def clientHandler(connSocket, clientAddr, serverPort):
+	global messages
 	cmd = connSocket.recv(1024)
 	if cmd.startswith('post '):
 	    vprint( 'this is a post command!')	#debug
@@ -29,6 +30,12 @@ def clientHandler(connSocket, addr):
 		    reply = 'ok'
 		    vprint( 'groupname is ok!')	#debug
 		    connSocket.send(reply)
+
+		    #if groupName not in messages:
+			#	messages[groupName] = [('address', 'port', 'username', 'timestamp', 'message')]}
+
+			#	print "messages: \n", messages
+
 		    cmd2 = connSocket.recv(1024)
 		    vprint( cmd2 )	#debug
 		    if cmd2.startswith('id '):
@@ -39,15 +46,14 @@ def clientHandler(connSocket, addr):
 					reply2 = 'ok'
 					vprint( 'username is ok!')	#debug
 					connSocket.send(reply2)
-					msg = connSocket.recv(1024)
-
-					if groupName not in groups:
-						groups.append((groupName, msg))
-
-					for lines in
-
-					print groups
-
+					msg = connSocket.recv(1024)	#receives message
+					print "the message: \n", msg
+					if groupName not in messages:
+						messages[groupName] = [( (clientAddr, serverPort, userName, 'timestamp', msg) )]
+					else:
+						messages[groupName].append( (clientAddr, serverPort, userName, 'timestamp', msg) )
+					vprint( "messages: \n")
+					vprint( messages )
 					connSocket.close()
 					return;
 			    else:
@@ -105,8 +111,8 @@ def main(argv):
 	serverSocket.listen(5)
 	print 'The server is ready to receive'
 	while 1:
-		connSocket, addr = serverSocket.accept()
-		thread.start_new_thread(clientHandler, (connSocket, addr))
+		connSocket, clientAddr = serverSocket.accept()
+		thread.start_new_thread(clientHandler, (connSocket, clientAddr, serverPort))
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
