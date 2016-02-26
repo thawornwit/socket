@@ -4,7 +4,7 @@ import sys, getopt, os
 verbose = True  #for debugging
 
 def vprint(arg):
-    #for debugging
+    #verbose print msg for debugging purposes
     if verbose:
         print arg
 
