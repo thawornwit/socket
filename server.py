@@ -1,5 +1,5 @@
 from socket import *
-import sys, getopt, thread
+import sys, getopt, thread, time
 
 verbose = True
 
@@ -47,11 +47,12 @@ def clientHandler(connSocket, clientAddr, serverPort):
 					vprint( 'username is ok!')	#debug
 					connSocket.send(reply2)
 					msg = connSocket.recv(1024)	#receives message
+					timestamp = time.strftime("%a %c %Y")
 					print "the message: \n", msg
 					if groupName not in messages:
-						messages[groupName] = [( (clientAddr, serverPort, userName, 'timestamp', msg) )]
+						messages[groupName] = [( (clientAddr, serverPort, userName, timestamp, msg) )]
 					else:
-						messages[groupName].append( (clientAddr, serverPort, userName, 'timestamp', msg) )
+						messages[groupName].append( (clientAddr, serverPort, userName, timestamp, msg) )
 					vprint( "messages: \n")
 					vprint( messages )
 					connSocket.close()
