@@ -72,10 +72,11 @@ def main(argv):
         if reply2 == 'ok':
             vprint( 'id is ok! continuing with msg...') #debug
 
-            msg = []
+            msg = ""
             sentinel = 'quit'   #type quit and press enter to exit message
             for line in iter(raw_input, sentinel):
-                    clientSocket.send(line)
+                msg += line + "\n"
+            clientSocket.send(msg)
             clientSocket.close()
             sys.exit(0)
 
