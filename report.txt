@@ -9,6 +9,26 @@ The applications are written in Python, so they need no special compilation.
 Just open a terminal or cmd, go to the directory, and run the desired
 python application with the correct arguments.
 
-It was tested on Python 2.7.11 on my home machine.
-It was also tested on iLab machines, which have Python 2.6.6.
-(Please note, this program will NOT work on Python 3)
+The applications were tested on Python 2.7.11 on my home machine.
+They were also tested on iLab machines, which have Python 2.6.6.
+(Please note, this program will NOT work on Python 3.x)
+
+The data structures used to hold the messages was, at its first layer, a python
+dictionary with the group name as the key, and a list of tuples as its value.
+
+Each list that maps to a groupname key holds a series of values for each
+element, and they are the port name and port number, user name, timestamp, and
+finally the message itself. When the server receives a get request, it pulls the header information and the
+message body from the dictionary, formats them as strings, and pushes them
+through the socket.
+
+The 'vprint()' helper method and 'verbose' global variable are debugging tools.
+In order to use any of the applications in verbose mode, uncomment the 'verbose'
+variable, vprint() method, and all the 'vprint()' method calls, then set the
+'verbose' global variable to True.
+
+Because we don't know how big the files are going to be beforehand, and to avoid
+getting all the messages at once through one packet, I coded a series of steps
+for the get application to wait until the client is ready to receive the header,
+then the body. This way, we don't have to worry about knowing the size of the
+packet, or getting more than one message through one packet.

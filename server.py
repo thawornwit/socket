@@ -5,14 +5,14 @@
 from socket import *
 import sys, getopt, thread, time
 
-verbose = False
+#verbose = False
 
 #messages = { 'groupName' : [('address', 'username', 'timestamp', 'message')]}
 messages = dict()
 
-def vprint(arg):
-	if verbose:
-		print arg
+#def vprint(arg):
+#	if verbose:
+#		print arg
 
 def printUsage():
 	#prints usage instructions
@@ -30,35 +30,35 @@ def clientHandler(connSocket, clientAddr):
 	#*******************************************************#
 	#this is the POST handler
 	if cmd.startswith('post '):
-	    vprint( 'this is a post command!')	#debug
+#	    vprint( 'this is a post command!')	#debug
 	    groupName = cmd[5:]
-	    vprint( 'received groupname: '+groupName)	#debug
+#	    vprint( 'received groupname: '+groupName)	#debug
 	    if isValidString(groupName):
 		    reply = 'ok'
-		    vprint( 'groupname is ok!')	#debug
+#		    vprint( 'groupname is ok!')	#debug
 		    connSocket.send(reply)
 		    cmd2 = connSocket.recv(1024)
-		    vprint( cmd2 )	#debug
+#		    vprint( cmd2 )	#debug
 		    if cmd2.startswith('id '):
-			    vprint( 'this is an id command!')	#debug
+#			    vprint( 'this is an id command!')	#debug
 			    userName = cmd2[3:]
-			    vprint( 'received username: '+userName)	#debug
+#			    vprint( 'received username: '+userName)	#debug
 			    if isValidString(userName):
 					reply2 = 'ok'
-					vprint( 'username is ok!')	#debug
+#					vprint( 'username is ok!')	#debug
 					connSocket.send(reply2)
 					msg = connSocket.recv(1024)	#receives message
 					timestamp = time.strftime("%a %c %Y")
-					#vprint("received message: \n" + msg)	#debug
+#					vprint("received message: \n" + msg)	#debug
 					print("received message: \n" + msg)
 					if groupName not in messages:
 						messages[groupName] = [( (clientAddr, userName, timestamp, msg) )]
 					else:
 						messages[groupName].append( (clientAddr, userName, timestamp, msg) )
-					vprint( "messages: \n")	#debug
-					vprint( messages )	#debug
-					vprint( "message count for group " + groupName + ": \n")	#debug
-					vprint( len(messages[groupName]) )	#debug
+#					vprint( "messages: \n")	#debug
+#					vprint( messages )	#debug
+#					vprint( "message count for group " + groupName + ": \n")	#debug
+#					vprint( len(messages[groupName]) )	#debug
 					connSocket.close()
 					return;
 			    else:
@@ -73,7 +73,7 @@ def clientHandler(connSocket, clientAddr):
 				return;
 	    else:
 		    reply = 'error: invalid group name'
-		    vprint( 'invalid group name!')	#debug
+#		    vprint( 'invalid group name!')	#debug
 		    connSocket.send(reply)
 		    connSocket.close()
 		    return;
@@ -81,34 +81,34 @@ def clientHandler(connSocket, clientAddr):
 	#*******************************************************#
 	#this is the GET handler
 	elif cmd.startswith('get '):
-		vprint( 'this is a get command!')	#debug
+#		vprint( 'this is a get command!')	#debug
 		groupName = cmd[4:]
-		vprint( 'received groupname: '+groupName)	#debug
+#		vprint( 'received groupname: '+groupName)	#debug
 		if isValidString(groupName):	#if group name is a valid printable string
 			if groupName in messages:	#and it exists in messages
-				vprint( 'groupname is ok!')	#debug
+#				vprint( 'groupname is ok!')	#debug
 				reply = 'ok'
 				connSocket.send(reply)
 				count = len(messages[groupName])
 				msgCount = "messages: " + str(count)
-				vprint("sending: " + msgCount)
+#				vprint("sending: " + msgCount)
 				connSocket.send(msgCount)
 				for row in messages[groupName]:
 					while 1:	#accepts header
 						reply = connSocket.recv(64)
 					 	if reply == 'header':
 							header = "from " + str(row[1]) + " /" + str(row[0][0]) + ":" + str(row[0][1]) + " " + str(row[2]) + "\n"
-							vprint( "header: \n" + header )
+#							vprint( "header: \n" + header )
 							connSocket.send(header)
 							break;
 					while 1:	#accepts body
 						reply = connSocket.recv(64)
 						if reply == "body":
 							msg = "" + str(row[3]) + "\n"
-							vprint(" message: \n" + msg )
+#							vprint(" message: \n" + msg )
 							connSocket.send(msg)
 							break;
-				vprint("end of messages.")
+#				vprint("end of messages.")
 				connSocket.close()
 				sys.exit(0)
 
@@ -119,8 +119,8 @@ def clientHandler(connSocket, clientAddr):
 	#*******************************************************#
 	else:
 		reply = 'error: invalid command'
-		vprint( 'neither post nor get!')	#debug
-		vprint( 'replying with: '+reply)	#debug
+#		vprint( 'neither post nor get!')	#debug
+#		vprint( 'replying with: '+reply)	#debug
 		connSocket.send(reply)
 		connSocket.close()
 		return;
