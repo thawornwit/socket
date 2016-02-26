@@ -22,7 +22,7 @@ def getUserId():
 
 def main(argv):
     userId = getUserId()
-    serverName = '192.168.1.6'    #default hostname
+    serverName = 'localhost'    #default hostname
     serverPort = 12000          #default port number
 
     #parsing arguments/options for hostname, port#
