@@ -48,22 +48,35 @@ def main(argv):
     #********************************************#
 
     group = "post "+groupName    #post msg with group name
-
     clientSocket.send(group)
+
     reply = clientSocket.recv(1024)
     vprint( "From Server: "+reply)     #debug
 
     if reply == 'ok':
-        print 'ok!'
+        vprint("group is ok! getting message count")
+        msgCount = clientSocket.recv(1024)) #receive message count
+        count = int(msgCount[10:])
+
+        for n in range(1, count):
+            header = clientSocket.recv(1024)
+            print header
+            body = clientSocket.recv(1024)
+            print body
+
+        clientSocket.close()
+        sys.exit(0)
+
 
     elif reply.startswith('error'):
         vprint( reply )  #debug
+        print reply
         clientSocket.close()
         sys.exit(1)
     else:
         print "server error"
         clientSocket.close()
         sys.exit(1)
-        
+
 if __name__ == "__main__":
    main(sys.argv[1:])

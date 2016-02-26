@@ -3,7 +3,8 @@ import sys, getopt, thread, time
 
 verbose = True
 
-messages = { 'groupName' : [('address', 'port', 'username', 'timestamp', 'message')]}
+#messages = { 'groupName' : [('address', 'username', 'timestamp', 'message')]}
+messages = dict()
 
 def vprint(arg):
 	if verbose:
@@ -19,9 +20,11 @@ def isValidString(msg):
 	allowed = string.printable
 	return not msg.translate(trans, allowed)
 
-def clientHandler(connSocket, clientAddr, serverPort):
+def clientHandler(connSocket, clientAddr):
 	global messages
 	cmd = connSocket.recv(1024)
+	#*******************************************************#
+	#this is the POST handler
 	if cmd.startswith('post '):
 	    vprint( 'this is a post command!')	#debug
 	    groupName = cmd[5:]
@@ -30,12 +33,6 @@ def clientHandler(connSocket, clientAddr, serverPort):
 		    reply = 'ok'
 		    vprint( 'groupname is ok!')	#debug
 		    connSocket.send(reply)
-
-		    #if groupName not in messages:
-			#	messages[groupName] = [('address', 'port', 'username', 'timestamp', 'message')]}
-
-			#	print "messages: \n", messages
-
 		    cmd2 = connSocket.recv(1024)
 		    vprint( cmd2 )	#debug
 		    if cmd2.startswith('id '):
@@ -50,11 +47,13 @@ def clientHandler(connSocket, clientAddr, serverPort):
 					timestamp = time.strftime("%a %c %Y")
 					print "the message: \n", msg
 					if groupName not in messages:
-						messages[groupName] = [( (clientAddr, serverPort, userName, timestamp, msg) )]
+						messages[groupName] = [( (clientAddr, userName, timestamp, msg) )]
 					else:
-						messages[groupName].append( (clientAddr, serverPort, userName, timestamp, msg) )
-					vprint( "messages: \n")
-					vprint( messages )
+						messages[groupName].append( (clientAddr, userName, timestamp, msg) )
+					vprint( "messages: \n")	#debug
+					vprint( messages )	#debug
+					vprint( "message count for group " + groupName + ": \n")	#debug
+					vprint( len(messages[groupName]) )	#debug
 					connSocket.close()
 					return;
 			    else:
@@ -73,13 +72,36 @@ def clientHandler(connSocket, clientAddr, serverPort):
 		    connSocket.send(reply)
 		    connSocket.close()
 		    return;
+
+	#*******************************************************#
+	#this is the GET handler
 	elif cmd.startswith('get '):
-		reply = 'ok'
-		vprint( 'this is a get command!')	#debug
-		vprint( 'replying with: '+reply)	#debug
+		vprint( 'this is a post command!')	#debug
+		groupName = cmd[4:]
+		vprint( 'received groupname: '+groupName)	#debug
+		if isValidString(groupName):	#if group name is a valid printable string
+			if groupName in messages:	#and it exists in messages
+				vprint( 'groupname is ok!')	#debug
+				reply = 'ok'
+				connSocket.send(reply)
+				count = len(messages[groupName])
+				msgCount = "messages: " + count
+				vprint("sending: " + msgCount)
+				connSocket.send(msgCount)
+				for n in range(0, count-1):
+					header = "From: " + messages[groupName][n][1] + " " + messages[groupName][n][0][0] + ":" + messages[groupName][n][0][1] + " " messages[groupName][n][2]
+					vprint( "header: \n" + header )
+					connSocket.send(header)
+					msg = messages[groupName][n][3]
+					connSocket.send(msg)
+				connSocket.close()
+				sys.exit(0)
+
+		reply = 'error: invalid group name'
 		connSocket.send(reply)
 		connSocket.close()
 		return;
+	#*******************************************************#
 	else:
 		reply = 'error: invalid command'
 		vprint( 'neither post nor get!')	#debug
@@ -113,7 +135,7 @@ def main(argv):
 	print 'The server is ready to receive'
 	while 1:
 		connSocket, clientAddr = serverSocket.accept()
-		thread.start_new_thread(clientHandler, (connSocket, clientAddr, serverPort))
+		thread.start_new_thread(clientHandler, (connSocket, clientAddr))
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
