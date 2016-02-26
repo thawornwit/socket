@@ -1,0 +1,14 @@
+Calvin Lee
+CS352 Assignment 3
+
+Group members:
+Calvin Lee
+
+Compiling instructions:
+The applications are written in Python, so they need no special compilation.
+Just open a terminal or cmd, go to the directory, and run the desired
+python application with the correct arguments.
+
+It was tested on Python 2.7.11 on my home machine.
+It was also tested on iLab machines, which have Python 2.6.6.
+(Please note, this program will NOT work on Python 3)

@@ -1,3 +1,7 @@
+#*******************************************************#
+#	Calvin Lee, CS352 Assignment 3
+#*******************************************************#
+
 from socket import *
 import sys, getopt, os
 
@@ -56,9 +60,10 @@ def main(argv):
         vprint("group is ok! getting message count")
         msgCount = clientSocket.recv(1024) #receive message count
         count = int(msgCount[10:])
-
+        print("\n" + str(count) + " messages\n")
+        
         for x in xrange(0, count):
-            print("\n" + str(count) + " messages\n")
+
             clientSocket.send("header")
             header = clientSocket.recv(1024)
             print header
