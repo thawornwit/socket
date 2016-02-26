@@ -52,7 +52,8 @@ def clientHandler(connSocket, clientAddr, serverPort):
 						messages[groupName] = [( (clientAddr, serverPort, userName, 'timestamp', msg) )]
 					else:
 						messages[groupName].append( (clientAddr, serverPort, userName, 'timestamp', msg) )
-					vprint( "messages: \n" + messages )
+					vprint( "messages: \n")
+					vprint( messages )
 					connSocket.close()
 					return;
 			    else:
