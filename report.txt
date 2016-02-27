@@ -32,3 +32,16 @@ getting all the messages at once through one packet, I coded a series of steps
 for the get application to wait until the client is ready to receive the header,
 then the body. This way, we don't have to worry about knowing the size of the
 packet, or getting more than one message through one packet.
+
+Initial testing involved making sure incorrect arguments were handled properly,
+as well as using a helper method to print debugging messages to ensure proper
+behavior of all three applications during development and testing.
+
+To test the threading aspect of the application, first I ran the server.py
+program on one ilab machine. On another ilab machine, I ran a simple loop on
+bash to repeatedly run the get.py program, fetching messages in one designated
+group name. Lastly, while the loop is running on the second machine, I ran the
+post.py program on a third ilab machine to post messages to the first machine
+that was running the server, posting messages to the predetermined group name.
+In the second machine that was set to loop the get.py program, the new messages
+show up as I post them, confirming the threads work properly.
