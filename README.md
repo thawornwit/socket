@@ -1,6 +1,6 @@
 # socket
 a simple set of TCP messaging applications, written in Python.
-all three applications require Python to be installed on the machine.
+all three applications require Python 2.7.11 to be installed on the machine.
 if unspecified, default server host name is 'localhost', and default
 port is '12000'.
 
